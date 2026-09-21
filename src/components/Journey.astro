@@ -1,0 +1,31 @@
+---
+import { journey, targets } from "../data/content";
+---
+
+<section id="journey">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Career</span>
+      <h2 class="section-title">The 6-phase plan.</h2>
+      <p class="section-sub">
+        Mechanical engineering paid the bills. Software is the destination —
+        and I&rsquo;m executing a deliberate, phased transition.
+      </p>
+    </div>
+    <div class="timeline">
+      <span class="timeline-fill" id="tlFill"></span>
+      {journey.map((j, i) => (
+        <div class="t-item reveal" style={`--d:${i * 0.06}s`}>
+          <span class="t-phase">Phase {j.phase}</span>
+          <h3>{j.title}</h3>
+          <p>{j.text}</p>
+        </div>
+      ))}
+    </div>
+    <div class="targets reveal">
+      <span class="lbl">Targeting product companies</span>
+      {targets.map((t) => <span class="target-chip">{t}</span>)}
+      <span class="lbl" style="margin-left:8px">· Microsoft most accessible MAANG</span>
+    </div>
+  </div>
+</section>

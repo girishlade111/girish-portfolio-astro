@@ -1,0 +1,19 @@
+---
+import { profile } from "../data/content";
+---
+
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-box reveal">
+      <span class="kicker" style="justify-content:center">Contact</span>
+      <h3>Let&rsquo;s build something.</h3>
+      <p>Roles, collaborations, product feedback — my inbox is open.</p>
+      <a href={`mailto:${profile.email}`} class="btn btn-primary">{profile.email}</a>
+      <div class="socials">
+        <a href={profile.github} target="_blank" rel="noopener">GitHub</a>
+        <a href={profile.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+        <a href={profile.instagram} target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </div>
+</section>

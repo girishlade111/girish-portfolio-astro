@@ -1,0 +1,40 @@
+---
+import { profile } from "../data/content";
+---
+
+<section id="about">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">About</span>
+      <h2 class="section-title">Engineer by trade,<br />builder by obsession.</h2>
+    </div>
+    <div class="about-grid">
+      <div class="about-copy reveal">
+        <p>
+          I&rsquo;m <strong>Girish Lade</strong> — a mechanical engineer at a manufacturing
+          plant in the Pune / PCMC area, {profile.origin.toLowerCase()}, now
+          transitioning into software engineering full-time.
+        </p>
+        <p>
+          I&rsquo;m the <strong>solo founder of LadeStack</strong> — a growing family of
+          free, local-first, client-side products: AI website builders, online
+          compilers, code editors, desktop agents and dev tools.
+        </p>
+        <p>
+          I don&rsquo;t hand-write every line — I <strong>direct AI tools</strong> like
+          Cursor, Claude Code and Gemini CLI, and I obsess over the last 10%:
+          design polish, performance and shipping. UI/UX designer and full-stack
+          builder, end to end.
+        </p>
+      </div>
+      <aside class="fact-card reveal" data-tilt>
+        <div class="fact-row"><span class="k">Based in</span><span class="v">{profile.location}</span></div>
+        <div class="fact-row"><span class="k">Roots</span><span class="v">{profile.origin}</span></div>
+        <div class="fact-row"><span class="k">Day job</span><span class="v">Mechanical engineer</span></div>
+        <div class="fact-row"><span class="k">Venture</span><span class="v">Founder, LadeStack</span></div>
+        <div class="fact-row"><span class="k">Style</span><span class="v">&ldquo;Vibe coder&rdquo;</span></div>
+        <div class="fact-row"><span class="k">Email</span><span class="v"><a href={`mailto:${profile.email}`}>{profile.email}</a></span></div>
+      </aside>
+    </div>
+  </div>
+</section>

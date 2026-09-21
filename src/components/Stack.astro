@@ -1,0 +1,23 @@
+---
+import { stackGroups } from "../data/content";
+---
+
+<section id="stack">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Toolbox</span>
+      <h2 class="section-title">Stack I ship with.</h2>
+      <p class="section-sub">
+        Battle-tested across 20+ products — picked for speed, cost (free) and control.
+      </p>
+    </div>
+    <div class="stack-grid">
+      {stackGroups.map((g, i) => (
+        <div class="stack-card reveal" style={`--d:${i * 0.1}s`} data-tilt>
+          <h3>{g.title}</h3>
+          <ul>{g.items.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

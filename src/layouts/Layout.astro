@@ -1,0 +1,171 @@
+---
+import "../styles/global.css";
+import { profile, navLinks } from "../data/content";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = "Girish Lade — Founder, LadeStack", description = profile.headline } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0c" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="preloader" id="preloader" aria-hidden="true">
+      <div class="preloader-name"><span>Girish</span><span>Lade</span></div>
+      <div class="preloader-bar"><i></i></div>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="#top" class="logo">girish<span class="dot">.</span>lade</a>
+        <nav>
+          <ul class="nav-links" id="navLinks">
+            {navLinks.map((l) => (
+              <li><a href={l.href}>{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <div style="display:flex;gap:10px;align-items:center">
+          <a href="#contact" class="btn btn-primary btn-sm nav-cta">Get in touch</a>
+          <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <slot />
+    </main>
+
+    <footer>
+      <div class="wrap foot-inner">
+        <span>© <span id="year"></span> {profile.name}. Built with Astro — no backend, no tracking.</span>
+        <span>Made with <span class="heart">●</span> in Pune, India</span>
+      </div>
+    </footer>
+
+    <script>
+      // mobile menu
+      const toggle = document.getElementById("menuToggle");
+      const links = document.getElementById("navLinks");
+      toggle?.addEventListener("click", () => links?.classList.toggle("open"));
+      links?.querySelectorAll("a").forEach((a) =>
+        a.addEventListener("click", () => links?.classList.remove("open"))
+      );
+      // scroll reveal
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+          }),
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+      // year
+      const y = document.getElementById("year");
+      if (y) y.textContent = String(new Date().getFullYear());
+
+      // preloader
+      const pre = document.getElementById("preloader");
+      const hidePre = () => pre?.classList.add("done");
+      if (document.readyState === "complete") setTimeout(hidePre, 500);
+      else window.addEventListener("load", () => setTimeout(hidePre, 500));
+      setTimeout(hidePre, 2600); // safety
+
+      // scroll progress
+      const prog = document.getElementById("progress");
+      const onScroll = () => {
+        const h = document.documentElement;
+        const max = h.scrollHeight - h.clientHeight;
+        if (prog) prog.style.transform = `scaleX(${max > 0 ? h.scrollTop / max : 0})`;
+        // timeline fill
+        const tl = document.querySelector(".timeline");
+        const fill = document.getElementById("tlFill");
+        if (tl && fill) {
+          const r = tl.getBoundingClientRect();
+          const total = r.height - 12;
+          const passed = Math.min(Math.max(h.clientHeight * 0.6 - r.top, 0), total);
+          fill.style.height = `${Math.max(passed, 0)}px`;
+        }
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // cursor glow (desktop)
+      const glow = document.getElementById("cursorGlow");
+      if (glow && matchMedia("(hover:hover)").matches) {
+        let gx = -600, gy = -600, tx = gx, ty = gy, shown = false;
+        window.addEventListener("mousemove", (e) => {
+          tx = e.clientX; ty = e.clientY;
+          if (!shown) { shown = true; glow.style.opacity = "1"; }
+        });
+        (function loop() {
+          gx += (tx - gx) * 0.08; gy += (ty - gy) * 0.08;
+          glow.style.transform = `translate(${gx - 280}px, ${gy - 280}px)`;
+          requestAnimationFrame(loop);
+        })();
+      }
+
+      // spotlight cards
+      document.querySelectorAll("[data-tilt]").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+          card.style.setProperty("--my", `${e.clientY - r.top}px`);
+        });
+      });
+
+      // magnetic buttons
+      document.querySelectorAll(".magnetic").forEach((btn) => {
+        btn.addEventListener("mousemove", (e) => {
+          const r = btn.getBoundingClientRect();
+          const x = (e.clientX - r.left - r.width / 2) * 0.18;
+          const y = (e.clientY - r.top - r.height / 2) * 0.28;
+          btn.style.transform = `translate(${x}px, ${y}px)`;
+        });
+        btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
+      });
+
+      // animated counters
+      const cio = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const el = e.target;
+            cio.unobserve(el);
+            const target = parseInt(el.dataset.count || "0", 10);
+            const pad = parseInt(el.dataset.pad || "0", 10);
+            const t0 = performance.now(), dur = 1400;
+            const tick = (t) => {
+              const p = Math.min((t - t0) / dur, 1);
+              const eased = 1 - Math.pow(1 - p, 3);
+              let v = String(Math.round(target * eased));
+              if (pad) v = v.padStart(pad, "0");
+              el.textContent = v;
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          }),
+        { threshold: 0.6 }
+      );
+      document.querySelectorAll(".count").forEach((el) => cio.observe(el));
+    </script>
+  </body>
+</html>
