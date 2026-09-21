@@ -1,0 +1,178 @@
+---
+// CustomCursor.astro — High-end artistic dual-ring magnetic cursor
+---
+
+<div class="custom-cursor" id="customCursor" aria-hidden="true">
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+</div>
+
+<style>
+  .custom-cursor {
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    mix-blend-mode: exclusion;
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .custom-cursor {
+      display: block;
+    }
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s ease-out, opacity 0.2s, background 0.3s;
+    box-shadow: 0 0 10px var(--accent-glow, rgba(255, 42, 85, 0.8));
+  }
+
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent, #ff2a55);
+    background: var(--accent-soft, rgba(255, 42, 85, 0.08));
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                height 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+                border-color 0.3s ease,
+                background 0.3s ease,
+                opacity 0.25s;
+  }
+
+  .cursor-hover .cursor-ring {
+    width: 60px;
+    height: 60px;
+    background: var(--accent-soft, rgba(255, 42, 85, 0.18));
+    border-color: #ffffff;
+  }
+
+  .cursor-hover .cursor-dot {
+    transform: translate(-50%, -50%) scale(1.6);
+    background: var(--accent, #ff2a55);
+  }
+
+  .cursor-active .cursor-ring {
+    transform: translate(-50%, -50%) scale(0.85);
+    border-width: 2.5px;
+  }
+
+  /* Click burst ring */
+  .cursor-burst {
+    position: fixed;
+    border-radius: 50%;
+    border: 2px solid var(--accent, #ff2a55);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: burstRipple 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    z-index: 9998;
+  }
+
+  @keyframes burstRipple {
+    0% {
+      width: 8px;
+      height: 8px;
+      opacity: 0.9;
+    }
+    100% {
+      width: 70px;
+      height: 70px;
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  (function initCustomCursor() {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const dot = document.getElementById("cursorDot");
+    const ring = document.getElementById("cursorRing");
+    const container = document.getElementById("customCursor");
+    if (!dot || !ring || !container) return;
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isHovered = false;
+    let isVisible = false;
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible) {
+        isVisible = true;
+        dot.style.opacity = "1";
+        ring.style.opacity = "1";
+      }
+
+      dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+    }, { passive: true });
+
+    // Smooth lerp loop for outer ring
+    function render() {
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+
+      ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    // Hover interactive state
+    const interactiveSelectors = "a, button, input, textarea, select, [data-tilt], .proj, .btn, .target-chip, .tab-btn, .cmd-chip";
+    
+    function attachHoverListeners() {
+      document.querySelectorAll(interactiveSelectors).forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          container.classList.add("cursor-hover");
+        });
+        el.addEventListener("mouseleave", () => {
+          container.classList.remove("cursor-hover");
+        });
+      });
+    }
+
+    attachHoverListeners();
+
+    // Click feedback & ripples
+    window.addEventListener("mousedown", (e) => {
+      container.classList.add("cursor-active");
+
+      // Spawn subtle burst ripple
+      const burst = document.createElement("div");
+      burst.className = "cursor-burst";
+      burst.style.left = `${e.clientX}px`;
+      burst.style.top = `${e.clientY}px`;
+      document.body.appendChild(burst);
+
+      setTimeout(() => burst.remove(), 550);
+    });
+
+    window.addEventListener("mouseup", () => {
+      container.classList.remove("cursor-active");
+    });
+
+    window.addEventListener("mouseleave", () => {
+      isVisible = false;
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+    });
+  })();
+</script>

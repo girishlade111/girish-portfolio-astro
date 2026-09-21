@@ -1,0 +1,176 @@
+---
+// BackgroundCanvas.astro — Interactive constellation and floating particle mesh
+---
+
+<canvas id="bgCanvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+<style>
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.65;
+    transition: opacity 0.5s ease;
+  }
+</style>
+
+<script>
+  (function initCanvas() {
+    const canvas = document.getElementById("bgCanvas") as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let particles: Particle[] = [];
+    let mouse = { x: -1000, y: -1000, active: false };
+
+    // Detect accent color from CSS variables
+    function getAccentColor(): { r: number; g: number; b: number } {
+      const computed = getComputedStyle(document.documentElement);
+      const color = computed.getPropertyValue("--accent-rgb").trim();
+      if (color) {
+        const parts = color.split(",").map(Number);
+        if (parts.length === 3 && !parts.some(isNaN)) {
+          return { r: parts[0], g: parts[1], b: parts[2] };
+        }
+      }
+      return { r: 255, g: 42, b: 85 }; // Default crimson
+    }
+
+    interface Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      alpha: number;
+      baseAlpha: number;
+      pulseSpeed: number;
+    }
+
+    function resize() {
+      if (!canvas) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+
+      // Scale particle count based on screen size
+      const count = width < 768 ? 32 : Math.min(Math.floor((width * height) / 18000), 80);
+      initParticles(count);
+    }
+
+    function initParticles(count: number) {
+      particles = [];
+      for (let i = 0; i < count; i++) {
+        const baseAlpha = 0.15 + Math.random() * 0.45;
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: 1 + Math.random() * 2,
+          alpha: baseAlpha,
+          baseAlpha: baseAlpha,
+          pulseSpeed: 0.01 + Math.random() * 0.02,
+        });
+      }
+    }
+
+    window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener(
+      "mousemove",
+      (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        mouse.active = true;
+      },
+      { passive: true }
+    );
+    window.addEventListener("mouseleave", () => {
+      mouse.active = false;
+    });
+
+    let lastTime = 0;
+    function render(time: number) {
+      if (!ctx || !canvas) return;
+
+      ctx.clearRect(0, 0, width, height);
+      const accent = getAccentColor();
+
+      // Update and draw particles
+      const maxConnectDist = 120;
+      const mouseRadius = 160;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Gentle breathing pulse
+        p.alpha = p.baseAlpha + Math.sin(time * 0.002 * p.pulseSpeed * 100) * 0.15;
+
+        // Position drift
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Screen boundary wrap
+        if (p.x < -10) p.x = width + 10;
+        else if (p.x > width + 10) p.x = -10;
+        if (p.y < -10) p.y = height + 10;
+        else if (p.y > height + 10) p.y = -10;
+
+        // Mouse gentle interaction
+        if (mouse.active) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouseRadius && dist > 0) {
+            const force = (1 - dist / mouseRadius) * 0.8;
+            p.x += (dx / dist) * force;
+            p.y += (dy / dist) * force;
+          }
+        }
+
+        // Draw particle dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${accent.r}, ${accent.g}, ${accent.b}, ${p.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `rgba(${accent.r}, ${accent.g}, ${accent.b}, 0.5)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Connect nearby particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxConnectDist) {
+            const lineAlpha = (1 - dist / maxConnectDist) * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${accent.r}, ${accent.g}, ${accent.b}, ${lineAlpha})`;
+            ctx.lineWidth = 0.75;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    resize();
+    requestAnimationFrame(render);
+  })();
+</script>

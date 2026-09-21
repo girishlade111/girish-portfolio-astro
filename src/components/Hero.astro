@@ -2,30 +2,93 @@
 import { profile } from "../data/content";
 ---
 
-<section class="hero">
-  <div class="hero-grid-bg"></div>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+<section class="hero" id="top">
+  <div class="hero-mesh" aria-hidden="true"></div>
+  <div class="hero-grid-overlay" aria-hidden="true"></div>
+
   <div class="wrap hero-inner">
-    <span class="hero-eyebrow enter" style="--d:.05s"><span class="pulse"></span> Open to product-engineering roles</span>
-    <h1 class="enter" style="--d:.15s">Girish<br /><span class="accent shimmer">Lade</span></h1>
-    <p class="hero-role enter" style="--d:.28s"><strong>Mechanical Engineer → Software Engineer.</strong> Founder of LadeStack.</p>
-    <p class="hero-tag enter" style="--d:.4s">
-      I&rsquo;m a &ldquo;vibe coder&rdquo; — I direct AI tools and ship like a founder.
-      Dozens of products built and shipped: AI builders, dev tools, compilers, agents.
-    </p>
-    <div class="hero-cta enter" style="--d:.52s">
-      <a href="#projects" class="btn btn-primary magnetic">View projects</a>
-      <a href="#contact" class="btn btn-ghost magnetic">Get in touch</a>
+    <!-- Status & Live Clock Eyebrow -->
+    <div class="hero-eyebrow-wrapper reveal" style="--d: 0.05s">
+      <div class="hero-eyebrow">
+        <span class="pulse"></span>
+        <span>Open to Product Engineering Roles</span>
+      </div>
+
+      <div class="live-ist-pill">
+        <span>📍 Pune, India</span>
+        <span>·</span>
+        <span id="istClock">Loading IST...</span>
+      </div>
     </div>
-    <div class="hero-stats enter" style="--d:.64s">
-      <div class="stat"><b><span class="count" data-count="20">0</span><em>+</em></b><span>Products shipped</span></div>
-      <div class="stat"><b><span class="count" data-count="15">0</span><em>+</em></b><span>Original music tracks</span></div>
-      <div class="stat"><b><span class="count" data-count="6" data-pad="2">00</span><em>&nbsp;</em></b><span>Phase career plan</span></div>
+
+    <!-- Main Dramatic Headline -->
+    <h1 class="reveal" style="--d: 0.15s">
+      Girish<br />
+      <span class="shimmer-text">Lade</span>
+    </h1>
+
+    <!-- Subtitle & Role -->
+    <div class="hero-role-pill reveal" style="--d: 0.28s">
+      <span>Mechanical Engineer → Full-Stack Software Engineer</span>
+    </div>
+
+    <p class="hero-tagline reveal" style="--d: 0.38s">
+      Solo founder of <strong>LadeStack</strong>. I direct state-of-the-art AI tools with mechanical engineering rigor,
+      obsessing over the final 10%: architecture, visual craftsmanship, and shipping at founder velocity.
+    </p>
+
+    <!-- CTAs -->
+    <div class="hero-cta reveal" style="--d: 0.48s">
+      <a href="#projects" class="btn btn-primary magnetic">
+        <span>Explore Projects</span>
+        <span>↓</span>
+      </a>
+      <a href="#terminal" class="btn btn-ghost magnetic">
+        <span>Open Terminal</span>
+        <span>⌨️</span>
+      </a>
+      <a href="#contact" class="btn btn-ghost magnetic">
+        <span>Get in Touch</span>
+      </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="hero-stats reveal" style="--d: 0.58s">
+      {profile.stats.map((s) => (
+        <div class="stat-item" data-tilt>
+          <b>
+            <span class="count" data-count={s.count}>0</span>
+            <em>{s.suffix}</em>
+          </b>
+          <span class="stat-label">{s.label}</span>
+          <span class="stat-detail">{s.highlight}</span>
+        </div>
+      ))}
     </div>
   </div>
-  <a href="#about" class="scroll-hint enter" style="--d:.8s" aria-label="Scroll down">
-    <span class="scroll-hint-line"></span>
-  </a>
 </section>
+
+<script>
+  // Live IST Clock (Pune, India - Asia/Kolkata)
+  function updateISTClock() {
+    const clock = document.getElementById("istClock");
+    if (!clock) return;
+
+    try {
+      const now = new Date();
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+      clock.textContent = `${now.toLocaleTimeString("en-US", options)} IST`;
+    } catch (e) {
+      clock.textContent = "IST (UTC+5:30)";
+    }
+  }
+
+  updateISTClock();
+  setInterval(updateISTClock, 1000);
+</script>

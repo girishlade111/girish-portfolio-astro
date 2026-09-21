@@ -1,18 +1,33 @@
 ---
 const items = [
-  "Astro", "Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase",
-  "Cloudflare", "Vibe Coding", "UI / UX", "AI Builders", "Dev Tools",
-  "Compilers", "Agents", "Local-First", "LadeStack",
+  { text: "Astro 5", icon: "🚀" },
+  { text: "Next.js 15", icon: "▲" },
+  { text: "TypeScript", icon: "📘" },
+  { text: "Tailwind CSS", icon: "🎨" },
+  { text: "Cloudflare Workers", icon: "⚡" },
+  { text: "Supabase", icon: "🟢" },
+  { text: "Claude Code", icon: "🤖" },
+  { text: "Cursor AI", icon: "✨" },
+  { text: "Local-First Architecture", icon: "🔒" },
+  { text: "WebContainers", icon: "📦" },
+  { text: "E2B Sandboxes", icon: "🛡️" },
+  { text: "Mechanical Rigor", icon: "⚙️" },
+  { text: "LadeStack", icon: "🔥" },
 ];
-const row = [...items, ...items];
+
+const loopItems = [...items, ...items, ...items];
 ---
 
-<div class="marquee" aria-hidden="true">
+<div class="marquee-container" aria-hidden="true">
   <div class="marquee-track">
-    {row.map((t) => (
-      <span class="marquee-item">{t}<i>✦</i></span>
+    {loopItems.map((item) => (
+      <div class="marquee-badge">
+        <span>{item.icon}</span>
+        <span>{item.text}</span>
+        <i>✦</i>
+      </div>
     ))}
   </div>
-  <div class="marquee-edge left"></div>
-  <div class="marquee-edge right"></div>
+  <div class="marquee-mask left"></div>
+  <div class="marquee-mask right"></div>
 </div>

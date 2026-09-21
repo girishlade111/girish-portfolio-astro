@@ -5,35 +5,75 @@ import { profile } from "../data/content";
 <section id="about">
   <div class="wrap">
     <div class="reveal">
-      <span class="kicker">About</span>
-      <h2 class="section-title">Engineer by trade,<br />builder by obsession.</h2>
+      <span class="kicker">About the Founder</span>
+      <h2 class="section-title">
+        Engineer by discipline.<br />Builder by obsession.
+      </h2>
+      <p class="section-sub">
+        Bridging the gap between real-world manufacturing precision and rapid software creation.
+      </p>
     </div>
-    <div class="about-grid">
-      <div class="about-copy reveal">
+
+    <div class="about-bento">
+      <!-- Story Card -->
+      <article class="bento-card about-story reveal" style="--d: 0.1s" data-tilt>
+        <div class="bento-card-top-shine"></div>
         <p>
-          I&rsquo;m <strong>Girish Lade</strong> — a mechanical engineer at a manufacturing
-          plant in the Pune / PCMC area, {profile.origin.toLowerCase()}, now
-          transitioning into software engineering full-time.
+          I&rsquo;m <strong>Girish Lade</strong> — a mechanical engineer operating in the manufacturing
+          heartland of Pune / PCMC, {profile.origin.toLowerCase()}, executing a deliberate, high-conviction
+          transition into software engineering.
         </p>
         <p>
-          I&rsquo;m the <strong>solo founder of LadeStack</strong> — a growing family of
-          free, local-first, client-side products: AI website builders, online
-          compilers, code editors, desktop agents and dev tools.
+          I&rsquo;m the <strong>solo founder of LadeStack</strong> — a growing family of free, client-side,
+          and local-first web utilities, AI website builders, cloud compilers, code editors, and desktop agents.
         </p>
         <p>
-          I don&rsquo;t hand-write every line — I <strong>direct AI tools</strong> like
-          Cursor, Claude Code and Gemini CLI, and I obsess over the last 10%:
-          design polish, performance and shipping. UI/UX designer and full-stack
-          builder, end to end.
+          I operate as an <strong>AI-augmented builder</strong>. Rather than spending weeks typing boilerplate,
+          I direct frontier AI models like Cursor, Claude Code, and Gemini CLI at maximum velocity — channeling
+          my energy into <strong>system architecture, clean UX, performance optimization, and shipping</strong>.
         </p>
-      </div>
-      <aside class="fact-card reveal" data-tilt>
-        <div class="fact-row"><span class="k">Based in</span><span class="v">{profile.location}</span></div>
-        <div class="fact-row"><span class="k">Roots</span><span class="v">{profile.origin}</span></div>
-        <div class="fact-row"><span class="k">Day job</span><span class="v">Mechanical engineer</span></div>
-        <div class="fact-row"><span class="k">Venture</span><span class="v">Founder, LadeStack</span></div>
-        <div class="fact-row"><span class="k">Style</span><span class="v">&ldquo;Vibe coder&rdquo;</span></div>
-        <div class="fact-row"><span class="k">Email</span><span class="v"><a href={`mailto:${profile.email}`}>{profile.email}</a></span></div>
+        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border);">
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent);">
+            ⚡ "Hardware precision meets software velocity."
+          </span>
+        </div>
+      </article>
+
+      <!-- Facts Card -->
+      <aside class="bento-card fact-card reveal" style="--d: 0.2s" data-tilt>
+        <div class="bento-card-top-shine"></div>
+        <div class="fact-list">
+          <div class="fact-row">
+            <span class="fact-key">Based in</span>
+            <span class="fact-val">{profile.location}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Roots</span>
+            <span class="fact-val">{profile.origin}</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Current Role</span>
+            <span class="fact-val">Mechanical Engineer</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Target Role</span>
+            <span class="fact-val" style="color: var(--accent);">Product / Software Engineer</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Venture</span>
+            <span class="fact-val">Solo Founder, LadeStack</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Shipping Style</span>
+            <span class="fact-val">&ldquo;Vibe Coder&rdquo; &amp; Director</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key">Contact</span>
+            <span class="fact-val">
+              <a href={`mailto:${profile.email}`}>{profile.email}</a>
+            </span>
+          </div>
+        </div>
       </aside>
     </div>
   </div>

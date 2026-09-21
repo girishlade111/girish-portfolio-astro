@@ -1,22 +1,104 @@
 ---
+import { musicTracks } from "../data/content";
 ---
 
 <section id="music">
   <div class="wrap">
     <div class="reveal">
-      <span class="kicker">Beyond code</span>
-      <h2 class="section-title">I compose too.</h2>
-    </div>
-    <div class="music-card reveal">
-      <div class="music-num">15<em>+</em></div>
-      <p>
-        Original cinematic and orchestral tracks — composed, produced and hosted
-        on Cloudflare R2. Code by day, scores by night. Full catalogue available
-        on request.
+      <span class="kicker">Sonic Dimensions</span>
+      <h2 class="section-title">Beyond Code: The Scores.</h2>
+      <p class="section-sub">
+        Writing code by day, scoring cinematic universes by night. Over 15+ original orchestral,
+        synthwave, and ambient tracks composed and stored on Cloudflare R2.
       </p>
-      <div class="eq" aria-hidden="true">
-        {Array.from({ length: 14 }).map(() => <span></span>)}
+    </div>
+
+    <div class="music-layout">
+      <!-- Big Stat Card with Animated Equalizer -->
+      <div class="music-lead-card reveal" style="--d: 0.1s" data-tilt>
+        <div>
+          <div class="music-count-huge">
+            15<em>+</em>
+          </div>
+          <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 8px;">
+            Original Compositions
+          </div>
+          <p style="color: var(--muted); margin-top: 14px; font-size: 0.95rem; line-height: 1.6;">
+            Orchestrated with virtual instruments, analog synthesizers, and field recordings.
+            Full catalogue available for soundtracks, games, and cinematic trailers.
+          </p>
+        </div>
+
+        <div class="audio-equalizer" id="musicEq" aria-hidden="true">
+          {Array.from({ length: 16 }).map(() => (
+            <span></span>
+          ))}
+        </div>
+      </div>
+
+      <!-- Track List Showcase -->
+      <div class="track-list reveal" style="--d: 0.2s">
+        {musicTracks.map((track) => (
+          <div class="track-item" data-track-id={track.id} data-tilt>
+            <div class="track-info">
+              <h4>{track.title}</h4>
+              <div class="track-meta">
+                <span>{track.genre}</span>
+                <span>•</span>
+                <span>{track.bpm} BPM</span>
+                <span>•</span>
+                <span>{track.duration}</span>
+              </div>
+            </div>
+
+            <button class="play-btn-mini" aria-label={`Play preview of ${track.title}`}>
+              <span class="play-icon">▶</span>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  (function initMusicPlayer() {
+    const trackItems = document.querySelectorAll(".track-item");
+    const eqBars = document.querySelectorAll("#musicEq span") as NodeListOf<HTMLElement>;
+    let currentPlaying: HTMLElement | null = null;
+
+    trackItems.forEach((item) => {
+      const btn = item.querySelector(".play-btn-mini");
+      const icon = item.querySelector(".play-icon");
+
+      item.addEventListener("click", () => {
+        const isThisPlaying = item.classList.contains("playing");
+
+        // Reset previous
+        trackItems.forEach((t) => {
+          t.classList.remove("playing");
+          const ic = t.querySelector(".play-icon");
+          if (ic) ic.textContent = "▶";
+        });
+
+        if (isThisPlaying) {
+          currentPlaying = null;
+          // Return eq to calm
+          eqBars.forEach((b) => (b.style.animationPlayState = "paused"));
+        } else {
+          item.classList.add("playing");
+          if (icon) icon.textContent = "❚❚";
+          currentPlaying = item as HTMLElement;
+
+          // Resume eq
+          eqBars.forEach((b) => (b.style.animationPlayState = "running"));
+
+          // Play synth chime
+          if ((window as any).soundManager) {
+            (window as any).soundManager.play("chime");
+          }
+        }
+      });
+    });
+  })();
+</script>

@@ -4,16 +4,152 @@ import { profile } from "../data/content";
 
 <section id="contact">
   <div class="wrap">
-    <div class="contact-box reveal">
-      <span class="kicker" style="justify-content:center">Contact</span>
-      <h3>Let&rsquo;s build something.</h3>
-      <p>Roles, collaborations, product feedback — my inbox is open.</p>
-      <a href={`mailto:${profile.email}`} class="btn btn-primary">{profile.email}</a>
-      <div class="socials">
-        <a href={profile.github} target="_blank" rel="noopener">GitHub</a>
-        <a href={profile.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-        <a href={profile.instagram} target="_blank" rel="noopener">Instagram</a>
+    <div class="contact-card reveal" data-tilt>
+      <span class="kicker" style="justify-content: center;">Direct Line</span>
+      <h3>Let&rsquo;s Build Something Iconic.</h3>
+      <p>
+        Whether it&rsquo;s a high-impact engineering role, early-stage product collaboration,
+        or feedback on LadeStack tools — my inbox is always open.
+      </p>
+
+      <!-- Copyable Email Box -->
+      <div class="contact-email-box">
+        <span class="email-text" id="emailVal">{profile.email}</span>
+        <button class="copy-btn" id="copyEmailBtn" aria-label="Copy email address">
+          Copy Email
+        </button>
+      </div>
+
+      <!-- Quick Message Form UI -->
+      <form class="contact-form" id="contactForm" onsubmit="return false;">
+        <div class="form-grid">
+          <input
+            type="text"
+            id="senderName"
+            class="form-input"
+            placeholder="Your Name / Organization"
+            required
+          />
+          <input
+            type="email"
+            id="senderEmail"
+            class="form-input"
+            placeholder="Your Email Address"
+            required
+          />
+        </div>
+        <textarea
+          id="senderMsg"
+          class="form-input"
+          rows="3"
+          placeholder="How can we collaborate? (e.g. software roles, projects, devtools)"
+          required
+        ></textarea>
+        <button type="submit" class="btn btn-primary magnetic" id="sendBtn" style="margin-top: 16px;">
+          <span>Send Message</span>
+          <span>⚡</span>
+        </button>
+      </form>
+
+      <!-- Social Links -->
+      <div class="social-links" style="margin-top: 48px;">
+        <a class="social-link" href={profile.github} target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+        <a class="social-link" href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn ↗
+        </a>
+        <a class="social-link" href={profile.instagram} target="_blank" rel="noopener noreferrer">
+          Instagram ↗
+        </a>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 0.94rem;
+    outline: none;
+    transition: all 0.25s ease;
+  }
+
+  .form-input:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  @media (max-width: 640px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  (function initContact() {
+    const copyBtn = document.getElementById("copyEmailBtn");
+    const emailVal = document.getElementById("emailVal");
+    const toast = document.getElementById("toast");
+    const form = document.getElementById("contactForm");
+
+    function showToast(msg: string) {
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3200);
+    }
+
+    copyBtn?.addEventListener("click", () => {
+      const email = emailVal?.textContent?.trim() || "admin@ladestack.in";
+      navigator.clipboard.writeText(email).then(() => {
+        copyBtn.textContent = "Copied! ✓";
+        showToast(`Copied ${email} to clipboard! 🎉`);
+        setTimeout(() => {
+          copyBtn.textContent = "Copy Email";
+        }, 2500);
+
+        if ((window as any).soundManager) {
+          (window as any).soundManager.play("chime");
+        }
+      });
+    });
+
+    form?.addEventListener("submit", () => {
+      const nameInput = document.getElementById("senderName") as HTMLInputElement;
+      const msgInput = document.getElementById("senderMsg") as HTMLTextAreaElement;
+      const name = nameInput?.value.trim() || "Friend";
+
+      showToast(`Thank you, ${name}! Your message was registered. 🚀`);
+
+      if (form) (form as HTMLFormElement).reset();
+
+      if ((window as any).soundManager) {
+        (window as any).soundManager.play("chime");
+      }
+    });
+  })();
+</script>

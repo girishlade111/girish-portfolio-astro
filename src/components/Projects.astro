@@ -1,32 +1,127 @@
 ---
-import { projects } from "../data/content";
+import { projects, projectCategories } from "../data/content";
 ---
 
 <section id="projects">
   <div class="wrap">
     <div class="reveal">
-      <span class="kicker">Selected work</span>
-      <h2 class="section-title">Things I&rsquo;ve built &amp; shipped.</h2>
+      <span class="kicker">Selected Ventures</span>
+      <h2 class="section-title">Things I&rsquo;ve Built &amp; Shipped.</h2>
       <p class="section-sub">
-        A slice of the LadeStack universe — free, local-first, client-side products,
-        designed and built end to end.
+        A curated showcase of the LadeStack ecosystem — client-side utilities, AI builders,
+        compilers, and local-first tools shipped with end-to-end founder ownership.
       </p>
     </div>
-    <div class="proj-grid">
+
+    <!-- Category Filter Tabs -->
+    <div class="filter-tabs reveal" style="--d: 0.1s" role="tablist">
+      {projectCategories.map((cat, i) => (
+        <button
+          class={`tab-btn ${i === 0 ? "active" : ""}`}
+          data-category={cat.id}
+          role="tab"
+          aria-selected={i === 0 ? "true" : "false"}
+        >
+          {cat.label} ({cat.count})
+        </button>
+      ))}
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="proj-grid" id="projectsGrid">
       {projects.map((p, i) => (
-        <article class="proj reveal" style={`--d:${i * 0.08}s`} data-tilt>
+        <article
+          class="proj reveal"
+          style={`--d: ${(i % 4) * 0.08}s`}
+          data-category={p.category}
+          data-tilt
+        >
           <div class="proj-top">
             <div>
               <h3>{p.name}</h3>
               <div class="proj-tagline">{p.tagline}</div>
             </div>
-            <span class="status">{p.status}</span>
+            <span class="status-badge">
+              <span class="pulse" style="width:6px;height:6px;"></span>
+              {p.status}
+            </span>
           </div>
-          <p class="desc">{p.description}</p>
-          <div class="proj-tags">{p.tags.map((t) => <span class="tag">{t}</span>)}</div>
-          {p.link && <a class="proj-link" href={p.link} target="_blank" rel="noopener">Visit live</a>}
+
+          <p class="proj-desc">{p.description}</p>
+
+          {p.metrics && (
+            <div class="proj-metrics">
+              <span>✦</span>
+              <span>{p.metrics}</span>
+            </div>
+          )}
+
+          <div class="proj-tags">
+            {p.tags.map((t) => (
+              <span class="tag">{t}</span>
+            ))}
+          </div>
+
+          <div class="proj-actions">
+            {p.link ? (
+              <a class="proj-link magnetic" href={p.link} target="_blank" rel="noopener noreferrer">
+                <span>Visit Live</span>
+                <span>↗</span>
+              </a>
+            ) : (
+              <span style="font-family:var(--font-mono);font-size:0.8rem;color:var(--faint);">
+                Internal / Local
+              </span>
+            )}
+            <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--faint);">
+              #{p.category}
+            </span>
+          </div>
         </article>
       ))}
     </div>
   </div>
 </section>
+
+<script>
+  (function initProjectFilters() {
+    const tabs = document.querySelectorAll(".tab-btn");
+    const cards = document.querySelectorAll(".proj") as NodeListOf<HTMLElement>;
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const cat = tab.getAttribute("data-category");
+        if (!cat) return;
+
+        tabs.forEach((t) => {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        cards.forEach((card) => {
+          const cardCat = card.getAttribute("data-category");
+          if (cat === "all" || cardCat === cat) {
+            card.style.display = "flex";
+            setTimeout(() => {
+              card.style.opacity = "1";
+              card.style.transform = "none";
+            }, 30);
+          } else {
+            card.style.opacity = "0";
+            card.style.transform = "scale(0.96)";
+            setTimeout(() => {
+              card.style.display = "none";
+            }, 200);
+          }
+        });
+
+        // Trigger UI sound if available
+        if ((window as any).soundManager) {
+          (window as any).soundManager.play("toggle");
+        }
+      });
+    });
+  })();
+</script>

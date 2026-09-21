@@ -1,0 +1,331 @@
+---
+import { terminalCommands } from "../data/content";
+---
+
+<section id="terminal" class="terminal-section">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Interactive Console</span>
+      <h2 class="section-title">The Vibe Coder Terminal.</h2>
+      <p class="section-sub">
+        Directing AI models from the command line. Type commands or click the chips below to query the founder profile.
+      </p>
+    </div>
+
+    <!-- Quick action chips -->
+    <div class="terminal-chips reveal" style="--d: 0.1s">
+      <span class="chip-label">Quick Run:</span>
+      {Object.keys(terminalCommands).map((cmd) => (
+        <button class="cmd-chip" data-cmd={cmd}>
+          <code>{cmd}</code>
+        </button>
+      ))}
+    </div>
+
+    <!-- Terminal Window -->
+    <div class="terminal-window reveal" style="--d: 0.2s" data-tilt>
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <span class="dot close"></span>
+          <span class="dot min"></span>
+          <span class="dot max"></span>
+        </div>
+        <div class="terminal-title">girish@ladestack:~ (zsh)</div>
+        <div class="terminal-badge">LIVE CLI</div>
+      </div>
+
+      <div class="terminal-body" id="termBody">
+        <div class="term-line output system-msg">
+          ⚡ Welcome to LadeStack Interactive Shell v2.4.0 (Astro Edge)<br />
+          Type <span class="accent-text">help</span> to view all commands or click chips above.
+        </div>
+        <div class="term-line output prompt-init">
+          <span class="term-user">girish@ladestack</span>:<span class="term-dir">~</span>$ <span class="accent-text">whoami</span>
+          <div class="output-block">
+            Girish Lade (@girishlade111)<br />
+            Role: Mechanical Engineer → Full-Stack Product Engineer<br />
+            Venture: Solo Founder of LadeStack (AI Builders & DevTools)<br />
+            Location: Pune / PCMC, Maharashtra, India
+          </div>
+        </div>
+        <div id="termHistory"></div>
+
+        <!-- Input line -->
+        <div class="term-input-row">
+          <span class="term-user">girish@ladestack</span>:<span class="term-dir">~</span>$&nbsp;
+          <input
+            type="text"
+            id="termInput"
+            class="term-input"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Type 'help'..."
+            aria-label="Terminal command input"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .terminal-section {
+    position: relative;
+    padding: 100px 0;
+  }
+
+  .terminal-chips {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 28px 0 24px;
+  }
+
+  .chip-label {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cmd-chip {
+    background: var(--card-bg, rgba(20, 20, 26, 0.7));
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    color: var(--text);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  .cmd-chip code {
+    font-family: var(--font-mono, monospace);
+    color: var(--accent);
+  }
+
+  .cmd-chip:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+
+  .terminal-window {
+    background: rgba(10, 10, 14, 0.88);
+    border: 1px solid var(--border-light, rgba(255, 255, 255, 0.12));
+    border-radius: calc(var(--radius) + 4px);
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 40px var(--accent-soft);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    transition: border-color 0.3s ease;
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: rgba(18, 18, 24, 0.95);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .terminal-dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .dot.close { background: #ff5f56; }
+  .dot.min { background: #ffbd2e; }
+  .dot.max { background: #27c93f; }
+
+  .terminal-title {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.82rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .terminal-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .terminal-body {
+    padding: 24px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: #d1d5db;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+
+  .terminal-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  .terminal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+
+  .system-msg {
+    color: var(--faint);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  }
+
+  .term-user {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .term-dir {
+    color: #60a5fa;
+  }
+
+  .accent-text {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .output-block {
+    color: #e5e7eb;
+    margin: 6px 0 16px 14px;
+    white-space: pre-wrap;
+  }
+
+  .term-input-row {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .term-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.92rem;
+    color: #ffffff;
+  }
+
+  .matrix-mode {
+    color: #00ff66 !important;
+    text-shadow: 0 0 8px #00ff66;
+  }
+</style>
+
+<script>
+  import { terminalCommands } from "../data/content";
+
+  (function initTerminal() {
+    const input = document.getElementById("termInput") as HTMLInputElement | null;
+    const historyContainer = document.getElementById("termHistory");
+    const termBody = document.getElementById("termBody");
+    const chips = document.querySelectorAll(".cmd-chip");
+
+    if (!input || !historyContainer || !termBody) return;
+
+    function runCommand(cmdText: string) {
+      const trimmed = cmdText.trim().toLowerCase();
+      if (!trimmed) return;
+
+      if (trimmed === "clear") {
+        historyContainer.innerHTML = "";
+        input.value = "";
+        return;
+      }
+
+      if (trimmed === "matrix") {
+        triggerMatrix();
+        input.value = "";
+        return;
+      }
+
+      const block = document.createElement("div");
+      block.className = "term-line output";
+
+      const promptHtml = `<span class="term-user">girish@ladestack</span>:<span class="term-dir">~</span>$ ${trimmed}`;
+      
+      let outputContent = "";
+      const cmdData = terminalCommands[trimmed];
+
+      if (cmdData) {
+        if (Array.isArray(cmdData.output)) {
+          outputContent = cmdData.output.join("<br />");
+        } else {
+          outputContent = cmdData.output;
+        }
+      } else {
+        outputContent = `<span style="color:#ef4444">Command not found: '${trimmed}'. Type <span class="accent-text">help</span> to view available commands.</span>`;
+      }
+
+      block.innerHTML = `${promptHtml}<div class="output-block">${outputContent}</div>`;
+      historyContainer.appendChild(block);
+      input.value = "";
+
+      // Auto scroll
+      termBody.scrollTop = termBody.scrollHeight;
+
+      // Play sound
+      if ((window as any).soundManager) {
+        (window as any).soundManager.play("chime");
+      }
+    }
+
+    function triggerMatrix() {
+      const block = document.createElement("div");
+      block.className = "term-line output matrix-mode";
+      block.innerHTML = `
+        <span class="term-user">girish@ladestack</span>:<span class="term-dir">~</span>$ matrix<br/>
+        <div class="output-block" style="color:#00ff66;font-size:0.8rem;">
+          01001100 01100001 01100100 01100101 01010011 01110100 01100001 01100011 01101011<br />
+          Wake up, Neo... Girish Lade is directing the AI models.<br />
+          Follow the white rabbit into production. 🐇
+        </div>
+      `;
+      historyContainer.appendChild(block);
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    // Input Enter listener
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        runCommand(input.value);
+      }
+    });
+
+    // Chip click listeners
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const cmd = chip.getAttribute("data-cmd");
+        if (cmd) {
+          runCommand(cmd);
+        }
+      });
+    });
+  })();
+</script>

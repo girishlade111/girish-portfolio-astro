@@ -1,41 +1,64 @@
 ---
 import "../styles/global.css";
 import { profile, navLinks } from "../data/content";
+import BackgroundCanvas from "../components/BackgroundCanvas.astro";
+import CustomCursor from "../components/CustomCursor.astro";
+import SoundFX from "../components/SoundFX.astro";
 
 interface Props {
   title?: string;
   description?: string;
 }
-const { title = "Girish Lade — Founder, LadeStack", description = profile.headline } = Astro.props;
+
+const {
+  title = "Girish Lade — Founder, LadeStack | AI Builder & Engineer",
+  description = profile.headline,
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="crimson">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0a0a0c" />
+    <meta name="theme-color" content="#07070a" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Premium Google Fonts: Syne (artistic display), Space Grotesk, Plus Jakarta Sans, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Theme persistence script to prevent flicker -->
+    <script is:inline>
+      const savedTheme = localStorage.getItem("ladestack_theme") || "crimson";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+    </script>
   </head>
   <body>
-    <div class="preloader" id="preloader" aria-hidden="true">
-      <div class="preloader-name"><span>Girish</span><span>Lade</span></div>
-      <div class="preloader-bar"><i></i></div>
-    </div>
-    <div class="progress" id="progress"></div>
-    <div class="grain" aria-hidden="true"></div>
-    <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
-    <header class="nav">
+    <!-- Top Scroll Progress -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Interactive Canvas & Ambient Effects -->
+    <BackgroundCanvas />
+    <CustomCursor />
+    <SoundFX />
+
+    <!-- Toast Notice -->
+    <div id="toast" class="toast-notice" role="status" aria-live="polite">Copied to clipboard!</div>
+
+    <!-- Floating Glass Island Navbar -->
+    <header class="nav" id="mainNav">
       <div class="nav-inner">
-        <a href="#top" class="logo">girish<span class="dot">.</span>lade</a>
+        <a href="#top" class="logo">
+          girish<span class="dot">.</span>lade
+        </a>
+
         <nav>
           <ul class="nav-links" id="navLinks">
             {navLinks.map((l) => (
@@ -43,9 +66,26 @@ const { title = "Girish Lade — Founder, LadeStack", description = profile.head
             ))}
           </ul>
         </nav>
-        <div style="display:flex;gap:10px;align-items:center">
-          <a href="#contact" class="btn btn-primary btn-sm nav-cta">Get in touch</a>
-          <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+
+        <div class="nav-right-controls">
+          <!-- Palette Switcher -->
+          <div class="palette-picker" title="Switch Theme Palette" aria-label="Theme Color Switcher">
+            <button class="color-swatch active" data-color="crimson" aria-label="Crimson Blaze"></button>
+            <button class="color-swatch" data-color="violet" aria-label="Cyber Violet"></button>
+            <button class="color-swatch" data-color="cyan" aria-label="Electric Cyan"></button>
+            <button class="color-swatch" data-color="emerald" aria-label="Neon Emerald"></button>
+          </div>
+
+          <!-- Sound FX Toggle -->
+          <button class="sound-toggle" id="soundToggle" title="Toggle UI Audio Feedback" aria-label="Toggle Sound">
+            <span id="soundIcon">🔇</span>
+          </button>
+
+          <!-- Contact CTA -->
+          <a href="#contact" class="btn btn-primary btn-sm nav-cta magnetic">Get in touch</a>
+
+          <!-- Mobile Toggle -->
+          <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation Menu">☰</button>
         </div>
       </div>
     </header>
@@ -56,116 +96,202 @@ const { title = "Girish Lade — Founder, LadeStack", description = profile.head
 
     <footer>
       <div class="wrap foot-inner">
-        <span>© <span id="year"></span> {profile.name}. Built with Astro — no backend, no tracking.</span>
-        <span>Made with <span class="heart">●</span> in Pune, India</span>
+        <span>© <span id="year"></span> {profile.name} · Solo Founder of <strong>LadeStack</strong></span>
+        <span>Engineered purely with <strong>Astro</strong> · Made with <span class="heart">♥</span> in Pune, India</span>
       </div>
     </footer>
 
+    <style>
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--accent-gradient);
+        transform-origin: 0 50%;
+        transform: scaleX(0);
+        z-index: 1000;
+        box-shadow: 0 0 12px var(--accent);
+      }
+    </style>
+
     <script>
-      // mobile menu
-      const toggle = document.getElementById("menuToggle");
-      const links = document.getElementById("navLinks");
-      toggle?.addEventListener("click", () => links?.classList.toggle("open"));
-      links?.querySelectorAll("a").forEach((a) =>
-        a.addEventListener("click", () => links?.classList.remove("open"))
-      );
-      // scroll reveal
-      const io = new IntersectionObserver(
-        (entries) =>
-          entries.forEach((e) => {
-            if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-          }),
-        { threshold: 0.12 }
-      );
-      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
-      // year
-      const y = document.getElementById("year");
-      if (y) y.textContent = String(new Date().getFullYear());
+      // ─── Theme Switcher Logic ───
+      const swatches = document.querySelectorAll(".color-swatch");
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "crimson";
 
-      // preloader
-      const pre = document.getElementById("preloader");
-      const hidePre = () => pre?.classList.add("done");
-      if (document.readyState === "complete") setTimeout(hidePre, 500);
-      else window.addEventListener("load", () => setTimeout(hidePre, 500));
-      setTimeout(hidePre, 2600); // safety
+      swatches.forEach((s) => {
+        if (s.getAttribute("data-color") === currentTheme) {
+          s.classList.add("active");
+        } else {
+          s.classList.remove("active");
+        }
 
-      // scroll progress
-      const prog = document.getElementById("progress");
-      const onScroll = () => {
+        s.addEventListener("click", () => {
+          const color = s.getAttribute("data-color");
+          if (!color) return;
+          document.documentElement.setAttribute("data-theme", color);
+          localStorage.setItem("ladestack_theme", color);
+
+          swatches.forEach((el) => el.classList.remove("active"));
+          s.classList.add("active");
+
+          if ((window as any).soundManager) {
+            (window as any).soundManager.play("warp");
+          }
+        });
+      });
+
+      // ─── Sound FX Toggle ───
+      const soundBtn = document.getElementById("soundToggle");
+      const soundIcon = document.getElementById("soundIcon");
+
+      function updateSoundIcon() {
+        const sm = (window as any).soundManager;
+        if (!sm || !soundIcon || !soundBtn) return;
+        if (sm.enabled) {
+          soundIcon.textContent = "🔊";
+          soundBtn.classList.add("active");
+        } else {
+          soundIcon.textContent = "🔇";
+          soundBtn.classList.remove("active");
+        }
+      }
+
+      // Initial check
+      setTimeout(updateSoundIcon, 100);
+
+      soundBtn?.addEventListener("click", () => {
+        const sm = (window as any).soundManager;
+        if (sm) {
+          sm.toggle();
+          updateSoundIcon();
+        }
+      });
+
+      // ─── Mobile Menu ───
+      const menuToggle = document.getElementById("menuToggle");
+      const navLinks = document.getElementById("navLinks");
+      menuToggle?.addEventListener("click", () => {
+        navLinks?.classList.toggle("open");
+      });
+      navLinks?.querySelectorAll("a").forEach((a) => {
+        a.addEventListener("click", () => navLinks?.classList.remove("open"));
+      });
+
+      // ─── Scroll Spy & Progress ───
+      const prog = document.getElementById("progressBar");
+      const sections = document.querySelectorAll("section[id]");
+      const navItems = document.querySelectorAll(".nav-links a");
+
+      function onScroll() {
         const h = document.documentElement;
         const max = h.scrollHeight - h.clientHeight;
-        if (prog) prog.style.transform = `scaleX(${max > 0 ? h.scrollTop / max : 0})`;
-        // timeline fill
-        const tl = document.querySelector(".timeline");
-        const fill = document.getElementById("tlFill");
-        if (tl && fill) {
-          const r = tl.getBoundingClientRect();
-          const total = r.height - 12;
-          const passed = Math.min(Math.max(h.clientHeight * 0.6 - r.top, 0), total);
-          fill.style.height = `${Math.max(passed, 0)}px`;
+        if (prog) {
+          prog.style.transform = `scaleX(${max > 0 ? h.scrollTop / max : 0})`;
         }
-      };
+
+        // Active Section Scrollspy
+        let currentSectionId = "";
+        sections.forEach((sec) => {
+          const top = (sec as HTMLElement).offsetTop - 140;
+          if (window.scrollY >= top) {
+            currentSectionId = sec.getAttribute("id") || "";
+          }
+        });
+
+        navItems.forEach((link) => {
+          if (link.getAttribute("href") === `#${currentSectionId}`) {
+            link.classList.add("active");
+          } else {
+            link.classList.remove("active");
+          }
+        });
+
+        // Timeline fill line
+        const tl = document.querySelector(".timeline");
+        const tlFill = document.getElementById("tlFill");
+        if (tl && tlFill) {
+          const rect = tl.getBoundingClientRect();
+          const total = rect.height - 20;
+          const passed = Math.min(Math.max(window.innerHeight * 0.6 - rect.top, 0), total);
+          tlFill.style.height = `${Math.max(passed, 0)}px`;
+        }
+      }
+
       window.addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
-      // cursor glow (desktop)
-      const glow = document.getElementById("cursorGlow");
-      if (glow && matchMedia("(hover:hover)").matches) {
-        let gx = -600, gy = -600, tx = gx, ty = gy, shown = false;
-        window.addEventListener("mousemove", (e) => {
-          tx = e.clientX; ty = e.clientY;
-          if (!shown) { shown = true; glow.style.opacity = "1"; }
-        });
-        (function loop() {
-          gx += (tx - gx) * 0.08; gy += (ty - gy) * 0.08;
-          glow.style.transform = `translate(${gx - 280}px, ${gy - 280}px)`;
-          requestAnimationFrame(loop);
-        })();
-      }
-
-      // spotlight cards
-      document.querySelectorAll("[data-tilt]").forEach((card) => {
-        card.addEventListener("mousemove", (e) => {
-          const r = card.getBoundingClientRect();
-          card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          card.style.setProperty("--my", `${e.clientY - r.top}px`);
-        });
-      });
-
-      // magnetic buttons
-      document.querySelectorAll(".magnetic").forEach((btn) => {
-        btn.addEventListener("mousemove", (e) => {
-          const r = btn.getBoundingClientRect();
-          const x = (e.clientX - r.left - r.width / 2) * 0.18;
-          const y = (e.clientY - r.top - r.height / 2) * 0.28;
-          btn.style.transform = `translate(${x}px, ${y}px)`;
-        });
-        btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
-      });
-
-      // animated counters
-      const cio = new IntersectionObserver(
-        (entries) =>
+      // ─── Scroll Reveal Observer ───
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
           entries.forEach((e) => {
-            if (!e.isIntersecting) return;
-            const el = e.target;
-            cio.unobserve(el);
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              revealObserver.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+
+      // ─── 3D Spotlight Tilt Cards ───
+      document.querySelectorAll("[data-tilt]").forEach((card) => {
+        card.addEventListener("mousemove", (e: any) => {
+          const r = card.getBoundingClientRect();
+          const x = e.clientX - r.left;
+          const y = e.clientY - r.top;
+          (card as HTMLElement).style.setProperty("--mx", `${x}px`);
+          (card as HTMLElement).style.setProperty("--my", `${y}px`);
+        });
+      });
+
+      // ─── Magnetic Buttons ───
+      document.querySelectorAll(".magnetic").forEach((btn) => {
+        btn.addEventListener("mousemove", (e: any) => {
+          const r = btn.getBoundingClientRect();
+          const x = (e.clientX - r.left - r.width / 2) * 0.22;
+          const y = (e.clientY - r.top - r.height / 2) * 0.28;
+          (btn as HTMLElement).style.transform = `translate(${x}px, ${y}px)`;
+        });
+        btn.addEventListener("mouseleave", () => {
+          (btn as HTMLElement).style.transform = "";
+        });
+      });
+
+      // ─── Animated Counters ───
+      const counterObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            counterObserver.unobserve(el);
+
             const target = parseInt(el.dataset.count || "0", 10);
             const pad = parseInt(el.dataset.pad || "0", 10);
-            const t0 = performance.now(), dur = 1400;
-            const tick = (t) => {
-              const p = Math.min((t - t0) / dur, 1);
-              const eased = 1 - Math.pow(1 - p, 3);
-              let v = String(Math.round(target * eased));
-              if (pad) v = v.padStart(pad, "0");
-              el.textContent = v;
-              if (p < 1) requestAnimationFrame(tick);
+            const duration = 1500;
+            const startTime = performance.now();
+
+            const tick = (now: number) => {
+              const elapsed = Math.min((now - startTime) / duration, 1);
+              const eased = 1 - Math.pow(1 - elapsed, 3);
+              let val = String(Math.round(target * eased));
+              if (pad) val = val.padStart(pad, "0");
+              el.textContent = val;
+              if (elapsed < 1) requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
-          }),
-        { threshold: 0.6 }
+          });
+        },
+        { threshold: 0.5 }
       );
-      document.querySelectorAll(".count").forEach((el) => cio.observe(el));
+      document.querySelectorAll(".count").forEach((el) => counterObserver.observe(el));
+
+      // ─── Dynamic Year ───
+      const yearEl = document.getElementById("year");
+      if (yearEl) yearEl.textContent = String(new Date().getFullYear());
     </script>
   </body>
 </html>

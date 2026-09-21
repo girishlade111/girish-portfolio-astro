@@ -5,27 +5,45 @@ import { journey, targets } from "../data/content";
 <section id="journey">
   <div class="wrap">
     <div class="reveal">
-      <span class="kicker">Career</span>
-      <h2 class="section-title">The 6-phase plan.</h2>
+      <span class="kicker">Strategic Transition</span>
+      <h2 class="section-title">The 6-Phase Roadmap.</h2>
       <p class="section-sub">
-        Mechanical engineering paid the bills. Software is the destination —
-        and I&rsquo;m executing a deliberate, phased transition.
+        Mechanical engineering paid the bills and forged discipline. Software is the ultimate destination —
+        executed with structured, measurable phases.
       </p>
     </div>
+
+    <!-- Timeline Container -->
     <div class="timeline">
       <span class="timeline-fill" id="tlFill"></span>
-      {journey.map((j, i) => (
-        <div class="t-item reveal" style={`--d:${i * 0.06}s`}>
-          <span class="t-phase">Phase {j.phase}</span>
-          <h3>{j.title}</h3>
-          <p>{j.text}</p>
+      {journey.map((item, idx) => (
+        <div class="t-item reveal" style={`--d: ${idx * 0.08}s`}>
+          <div class="t-header">
+            <span class="t-phase">PHASE {item.phase}</span>
+            <span class="t-tag">{item.tag}</span>
+            <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);">
+              [{item.status}]
+            </span>
+          </div>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
         </div>
       ))}
     </div>
-    <div class="targets reveal">
-      <span class="lbl">Targeting product companies</span>
-      {targets.map((t) => <span class="target-chip">{t}</span>)}
-      <span class="lbl" style="margin-left:8px">· Microsoft most accessible MAANG</span>
+
+    <!-- Target Companies Bar -->
+    <div class="targets-bar reveal" style="--d: 0.2s">
+      <span class="targets-label">Target Product Companies:</span>
+      <div class="target-chips">
+        {targets.map((t) => (
+          <div class="target-chip magnetic">
+            <span>{t.name}</span>
+            <span style="font-family:var(--font-mono);font-size:0.75rem;opacity:0.7;">
+              · {t.role}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
