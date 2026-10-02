@@ -196,3 +196,11 @@ Simply connect your GitHub repository to Netlify or GitHub Actions, specifying:
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 🙏 Credits
+
+**Built by Girish Lade** — [ladestack.in](https://ladestack.in)
+
+Solo founder of LadeStack, building free tools for everyone.
